@@ -43,7 +43,7 @@ public:
 	Subscriptions get_subscriptions() override
 	{
 		return {
-			       make_handler( &GpsRtkPlugin::handle_baseline_msg )
+			make_handler( &GpsRtkPlugin::handle_baseline_msg )
 		};
 	}
 
@@ -131,5 +131,5 @@ private:
 }	// namespace extra_plugins
 }	// namespace mavros
 
-#include <pluginlib/class_list_macros.h>
+#include <pluginlib/class_list_macros.hpp>
 PLUGINLIB_EXPORT_CLASS(mavros::extra_plugins::GpsRtkPlugin, mavros::plugin::PluginBase)

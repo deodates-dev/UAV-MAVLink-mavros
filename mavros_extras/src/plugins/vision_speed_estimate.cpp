@@ -92,7 +92,7 @@ private:
 		vs.x = v.x();
 		vs.y = v.y();
 		vs.z = v.z();
-		// [[[end]]] (checksum: aee3cc9a73a2e736b7bc6c83ea93abdb)
+		// [[[end]]] (sum: ruPMmnOi5z)
 
 		ftf::covariance_to_mavlink(cov, vs.covariance);
 
@@ -111,8 +111,8 @@ private:
 	{
 		// Send transformed data from local ENU to NED frame
 		send_vision_speed_estimate(stamp.toNSec() / 1000,
-					ftf::transform_frame_enu_ned(vel_enu),
-					ftf::transform_frame_enu_ned(cov_enu));
+			ftf::transform_frame_enu_ned(vel_enu),
+			ftf::transform_frame_enu_ned(cov_enu));
 	}
 
 	/* -*- callbacks -*- */
@@ -158,5 +158,5 @@ private:
 }	// namespace extra_plugins
 }	// namespace mavros
 
-#include <pluginlib/class_list_macros.h>
+#include <pluginlib/class_list_macros.hpp>
 PLUGINLIB_EXPORT_CLASS(mavros::extra_plugins::VisionSpeedEstimatePlugin, mavros::plugin::PluginBase)

@@ -46,10 +46,10 @@ class SetpointAttitudePlugin : public plugin::PluginBase,
 public:
 	SetpointAttitudePlugin() : PluginBase(),
 		sp_nh("~setpoint_attitude"),
+		tf_listen(false),
 		tf_rate(50.0),
 		use_quaternion(false),
-		reverse_thrust(false),
-		tf_listen(false)
+		reverse_thrust(false)
 	{ }
 
 	void initialize(UAS &uas_) override
@@ -219,5 +219,5 @@ private:
 }	// namespace std_plugins
 }	// namespace mavros
 
-#include <pluginlib/class_list_macros.h>
+#include <pluginlib/class_list_macros.hpp>
 PLUGINLIB_EXPORT_CLASS(mavros::std_plugins::SetpointAttitudePlugin, mavros::plugin::PluginBase)

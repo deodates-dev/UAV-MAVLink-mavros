@@ -93,7 +93,7 @@ private:
 		raw_rc_in[offset + 5] = port.chan6_raw;
 		raw_rc_in[offset + 6] = port.chan7_raw;
 		raw_rc_in[offset + 7] = port.chan8_raw;
-		// [[[end]]] (checksum: fcb14b1ddfff9ce7dd02f5bd03825cff)
+		// [[[end]]] (sum: /LFLHd//nO)
 
 		auto rcin_msg = boost::make_shared<mavros_msgs::RCIn>();
 
@@ -146,7 +146,7 @@ private:
 		case  3: raw_rc_in[ 2] = channels.chan3_raw;
 		case  2: raw_rc_in[ 1] = channels.chan2_raw;
 		case  1: raw_rc_in[ 0] = channels.chan1_raw;
-		// [[[end]]] (checksum: 56e9ab5407bd2c864abde230a6cf3fed)
+		// [[[end]]] (sum: VumrVAe9LI)
 		case  0: break;
 		}
 
@@ -188,7 +188,7 @@ private:
 		raw_rc_out[offset + 5] = port.servo6_raw;
 		raw_rc_out[offset + 6] = port.servo7_raw;
 		raw_rc_out[offset + 7] = port.servo8_raw;
-		// [[[end]]] (checksum: 946d524fe9fbaa3e52fbdf8a905fbf0f)
+		// [[[end]]] (sum: lG1ST+n7qj)
 		if (msg->magic == MAVLINK_STX) {
 			// [[[cog:
 			// for i in range(9, 17):
@@ -202,7 +202,7 @@ private:
 			raw_rc_out[offset + 13] = port.servo14_raw;
 			raw_rc_out[offset + 14] = port.servo15_raw;
 			raw_rc_out[offset + 15] = port.servo16_raw;
-			// [[[end]]] (checksum: 60a386cba6faa126ee7dfe1b22f50398)
+			// [[[end]]] (sum: YKOGy6b6oS)
 		}
 
 		auto rcout_msg = boost::make_shared<mavros_msgs::RCOut>();
@@ -236,7 +236,7 @@ private:
 		ovr.target_component = m_uas->get_tgt_component();
 
 		// [[[cog:
-		// for i in range(1, 9):
+		// for i in range(1, 19):
 		//     cog.outl("ovr.chan%d_raw = req->channels[%d];" % (i, i - 1))
 		// ]]]
 		ovr.chan1_raw = req->channels[0];
@@ -247,13 +247,22 @@ private:
 		ovr.chan6_raw = req->channels[5];
 		ovr.chan7_raw = req->channels[6];
 		ovr.chan8_raw = req->channels[7];
-		// [[[end]]] (checksum: bd27f3e85f5ab614ce1332ae3f4c6ebd)
-
+		ovr.chan9_raw = req->channels[8];
+		ovr.chan10_raw = req->channels[9];
+		ovr.chan11_raw = req->channels[10];
+		ovr.chan12_raw = req->channels[11];
+		ovr.chan13_raw = req->channels[12];
+		ovr.chan14_raw = req->channels[13];
+		ovr.chan15_raw = req->channels[14];
+		ovr.chan16_raw = req->channels[15];
+		ovr.chan17_raw = req->channels[16];
+		ovr.chan18_raw = req->channels[17];
+		// [[[end]]] (sum: PJ9/HOd6SW)
 		UAS_FCU(m_uas)->send_message_ignore_drop(ovr);
 	}
 };
 }	// namespace std_plugins
 }	// namespace mavros
 
-#include <pluginlib/class_list_macros.h>
+#include <pluginlib/class_list_macros.hpp>
 PLUGINLIB_EXPORT_CLASS(mavros::std_plugins::RCIOPlugin, mavros::plugin::PluginBase)

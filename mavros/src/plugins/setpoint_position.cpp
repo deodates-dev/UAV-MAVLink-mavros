@@ -43,8 +43,8 @@ public:
 	SetpointPositionPlugin() : PluginBase(),
 		sp_nh("~setpoint_position"),
 		spg_nh("~"),
-		tf_rate(50.0),
-		tf_listen(false)
+		tf_listen(false),
+		tf_rate(50.0)
 	{ }
 
 	void initialize(UAS &uas_) override
@@ -295,5 +295,5 @@ private:
 }	// namespace std_plugins
 }	// namespace mavros
 
-#include <pluginlib/class_list_macros.h>
+#include <pluginlib/class_list_macros.hpp>
 PLUGINLIB_EXPORT_CLASS(mavros::std_plugins::SetpointPositionPlugin, mavros::plugin::PluginBase)

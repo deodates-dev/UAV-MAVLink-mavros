@@ -242,7 +242,7 @@ private:
 			 */
 			mavlink::common::msg::HIL_GPS hil_gps {};
 
-			vel *= 1e2; // [cm/s]
+			vel *= 1e2;	// [cm/s]
 
 			// compute course over ground
 			double cog;
@@ -364,5 +364,5 @@ private:
 }	// namespace extra_plugins
 }	// namespace mavros
 
-#include <pluginlib/class_list_macros.h>
+#include <pluginlib/class_list_macros.hpp>
 PLUGINLIB_EXPORT_CLASS(mavros::extra_plugins::FakeGPSPlugin, mavros::plugin::PluginBase)

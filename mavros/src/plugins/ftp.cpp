@@ -204,11 +204,11 @@ public:
 		is_error(false),
 		r_errno(0),
 		list_offset(0),
-		read_offset(0),
-		write_offset(0),
 		open_size(0),
 		read_size(0),
+		read_offset(0),
 		read_buffer {},
+		write_offset(0),
 		checksum_crc32(0)
 	{ }
 
@@ -1071,5 +1071,5 @@ private:
 }	// namespace std_plugins
 }	// namespace mavros
 
-#include <pluginlib/class_list_macros.h>
+#include <pluginlib/class_list_macros.hpp>
 PLUGINLIB_EXPORT_CLASS(mavros::std_plugins::FTPPlugin, mavros::plugin::PluginBase)

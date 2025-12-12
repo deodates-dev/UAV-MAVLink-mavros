@@ -33,10 +33,10 @@ using utils::enum_value;
 
 MavRos::MavRos() :
 	mavlink_nh("mavlink"),		// allow to namespace it
+	last_message_received_from_gcs(0),
 	fcu_link_diag("FCU connection"),
 	gcs_link_diag("GCS bridge"),
 	plugin_loader("mavros", "mavros::plugin::PluginBase"),
-	last_message_received_from_gcs(0),
 	plugin_subscriptions{}
 {
 	std::string fcu_url, gcs_url;
@@ -64,6 +64,19 @@ MavRos::MavRos() :
 	nh.getParam("plugin_blacklist", plugin_blacklist);
 	nh.getParam("plugin_whitelist", plugin_whitelist);
 
+	// Get frame_id
+	std::string base_link_frame_id, odom_frame_id, map_frame_id;
+	if (nh.param<std::string>("base_link_frame_id", base_link_frame_id, "base_link"))
+		ROS_INFO("Find param base_link_frame_id: %s", base_link_frame_id.c_str());
+	if (nh.param<std::string>("odom_frame_id", odom_frame_id, "odom"))
+		ROS_INFO("Find param odom_frame_id: %s", odom_frame_id.c_str());
+	if (nh.param<std::string>("map_frame_id", map_frame_id, "map"))
+		ROS_INFO("Find param map_frame_id: %s", map_frame_id.c_str());
+	mav_uas.set_base_link_frame_id(base_link_frame_id);
+	mav_uas.set_odom_frame_id(odom_frame_id);
+	mav_uas.set_map_frame_id(map_frame_id);
+	mav_uas.setup_static_tf();
+
 	conn_timeout = ros::Duration(conn_timeout_d);
 
 	// Now we use FCU URL as a hardware Id
@@ -71,7 +84,7 @@ MavRos::MavRos() :
 
 	ROS_INFO_STREAM("FCU URL: " << fcu_url);
 	try {
-		fcu_link = MAVConnInterface::open_url(fcu_url, system_id, component_id);
+		fcu_link = MAVConnInterface::open_url_no_connect(fcu_url, system_id, component_id);
 		// may be overridden by URL
 		system_id = fcu_link->get_system_id();
 		component_id = fcu_link->get_component_id();
@@ -102,7 +115,7 @@ MavRos::MavRos() :
 	if (gcs_url != "") {
 		ROS_INFO_STREAM("GCS URL: " << gcs_url);
 		try {
-			gcs_link = MAVConnInterface::open_url(gcs_url, system_id, component_id);
+			gcs_link = MAVConnInterface::open_url_no_connect(gcs_url, system_id, component_id);
 
 			gcs_link_diag.set_mavconn(gcs_link);
 			gcs_diag_updater.setHardwareID(gcs_url);
@@ -142,31 +155,31 @@ MavRos::MavRos() :
 	// connect FCU link
 
 	// XXX TODO: move workers to ROS Spinner, let mavconn threads to do only IO
-	fcu_link->message_received_cb = [this](const mavlink_message_t *msg, const Framing framing) {
-		mavlink_pub_cb(msg, framing);
-		plugin_route_cb(msg, framing);
+	fcu_link->connect(
+		[this](const mavlink_message_t *msg, const Framing framing) {
+			mavlink_pub_cb(msg, framing);
+			plugin_route_cb(msg, framing);
 
-		if (gcs_link) {
-			if (this->gcs_quiet_mode && msg->msgid != mavlink::minimal::msg::HEARTBEAT::MSG_ID &&
-				(ros::Time::now() - this->last_message_received_from_gcs > this->conn_timeout)) {
-				return;
+			if (gcs_link) {
+				if (this->gcs_quiet_mode && msg->msgid != mavlink::minimal::msg::HEARTBEAT::MSG_ID &&
+					(ros::Time::now() - this->last_message_received_from_gcs > this->conn_timeout)) {
+					return;
+				}
+
+				gcs_link->send_message_ignore_drop(msg);
 			}
-
-			gcs_link->send_message_ignore_drop(msg);
-		}
-	};
-
-	fcu_link->port_closed_cb = []() {
-		ROS_ERROR("FCU connection closed, mavros will be terminated.");
-		ros::requestShutdown();
-	};
+		},
+		[]() {
+			ROS_ERROR("FCU connection closed, mavros will be terminated.");
+			ros::requestShutdown();
+		});
 
 	if (gcs_link) {
 		// setup GCS link bridge
-		gcs_link->message_received_cb = [this, fcu_link](const mavlink_message_t *msg, const Framing framing) {
+		gcs_link->connect([this, fcu_link](const mavlink_message_t *msg, const Framing framing) {
 			this->last_message_received_from_gcs = ros::Time::now();
 			fcu_link->send_message_ignore_drop(msg);
-		};
+		});
 
 		gcs_link_diag.set_connection_status(true);
 	}

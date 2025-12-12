@@ -23,7 +23,7 @@
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
 
 namespace mavros {
-namespace extra_plugins{
+namespace extra_plugins {
 /**
  * @brief Vision pose estimate plugin
  *
@@ -53,7 +53,7 @@ public:
 
 		if (tf_listen) {
 			ROS_INFO_STREAM_NAMED("vision_pose", "Listen to vision transform " << tf_frame_id
-						<< " -> " << tf_child_frame_id);
+											   << " -> " << tf_child_frame_id);
 			tf2_start("VisionPoseTF", &VisionPoseEstimatePlugin::transform_cb);
 		}
 		else {
@@ -97,8 +97,8 @@ private:
 
 		auto position = ftf::transform_frame_enu_ned(Eigen::Vector3d(tr.translation()));
 		auto rpy = ftf::quaternion_to_rpy(
-				ftf::transform_orientation_enu_ned(
-				ftf::transform_orientation_baselink_aircraft(Eigen::Quaterniond(tr.rotation()))));
+			ftf::transform_orientation_enu_ned(
+			ftf::transform_orientation_baselink_aircraft(Eigen::Quaterniond(tr.rotation()))));
 
 		auto cov_ned = ftf::transform_frame_enu_ned(cov);
 		ftf::EigenMapConstCovariance6d cov_map(cov_ned.data());
@@ -121,7 +121,7 @@ private:
 		vp.roll = rpy.x();
 		vp.pitch = rpy.y();
 		vp.yaw = rpy.z();
-		// [[[end]]] (checksum: 2048daf411780847e77f08fe5a0b9dd3)
+		// [[[end]]] (sum: IEja9BF4CE)
 
 		// just the URT of the 6x6 Pose Covariance Matrix, given
 		// that the matrix is symmetric
@@ -163,5 +163,5 @@ private:
 }	// namespace extra_plugins
 }	// namespace mavros
 
-#include <pluginlib/class_list_macros.h>
+#include <pluginlib/class_list_macros.hpp>
 PLUGINLIB_EXPORT_CLASS(mavros::extra_plugins::VisionPoseEstimatePlugin, mavros::plugin::PluginBase)

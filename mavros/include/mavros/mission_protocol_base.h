@@ -81,7 +81,7 @@ static double waypoint_encode_factor( const uint8_t &frame ){
 		return 1;
 	default:
 		return 1;
-	// [[[end]]] (checksum: 152fba25e8f422b878caf990a551a6fd)
+	// [[[end]]] (sum: FS+6Jej0Ir)
 	}
 }
 
@@ -120,7 +120,7 @@ mavros_msgs::Waypoint mav_to_msg(const ITEM &mav_msg)
 	ret.x_lat = mav_msg.x;
 	ret.y_long = mav_msg.y;
 	ret.z_alt = mav_msg.z;
-	// [[[end]]] (checksum: 27badd1a5facc63f38cdd7aad3be9816)
+	// [[[end]]] (sum: J7rdGl+sxj)
 
 	return ret;
 }
@@ -148,7 +148,7 @@ inline mavros_msgs::Waypoint mav_to_msg(const WP_ITEM_INT &mav_msg){
 	ret.x_lat = mav_msg.x / waypoint_encode_factor(mav_msg.frame);
 	ret.y_long = mav_msg.y / waypoint_encode_factor(mav_msg.frame);
 	ret.z_alt = mav_msg.z;
-	// [[[end]]] (checksum: 6c82a18990af7aeeb1db9211e9b1bbf1)
+	// [[[end]]] (sum: bIKhiZCveu)
 
 	return ret;
 }
@@ -173,7 +173,7 @@ ITEM mav_from_msg(const mavros_msgs::Waypoint &wp, const uint16_t seq, WP_TYPE t
 	ret.x = wp.x_lat;
 	ret.y = wp.y_long;
 	ret.z = wp.z_alt;
-	// [[[end]]] (checksum: c1b08cda34f1c4dc94129bda4743aaec)
+	// [[[end]]] (sum: wbCM2jTxxN)
 
 	ret.seq = seq;
 
@@ -205,7 +205,7 @@ inline WP_ITEM_INT mav_from_msg(const mavros_msgs::Waypoint &wp, const uint16_t 
 	ret.x = int32_t(wp.x_lat * waypoint_encode_factor(wp.frame));
 	ret.y = int32_t(wp.y_long * waypoint_encode_factor(wp.frame));
 	ret.z = wp.z_alt;
-	// [[[end]]] (checksum: 6315c451fe834dbf20a43ee112b8b5fe)
+	// [[[end]]] (sum: YxXEUf6DTb)
 
 	ret.seq = seq;
 
@@ -220,7 +220,7 @@ std::string waypoint_to_string(const ITEM &wp)
 {
 	std::stringstream ss;
 	ss.precision(7);
-	ss << '#' << wp.seq << (wp.current ? '*' : ' ') << " F:" << wp.frame << " C:" << std::setw(3) << wp.command;
+	ss << '#' << wp.seq << (wp.current ? '*' : ' ') << " F:" << +wp.frame << " C:" << std::setw(3) << wp.command;
 	ss << " p: " <<   wp.param1 << ' ' << wp.param2 << ' ' << wp.param3 << ' ' << wp.param4 << " x: " << wp.x << " y: " << wp.y << " z: " << wp.z;
 	return ss.str();
 }
@@ -237,10 +237,10 @@ public:
 		wp_state(WP::IDLE),
 		wp_type(WP_TYPE::MISSION),
 		wp_count(0),
-		wp_retries(RETRIES_COUNT),
 		wp_cur_id(0),
 		wp_cur_active(0),
 		wp_set_active(0),
+		wp_retries(RETRIES_COUNT),
 		is_timedout(false),
 		do_pull_after_gcs(false),
 		enable_partial_push(false),
@@ -251,7 +251,7 @@ public:
 		RESCHEDULE_DT(RESCHEDULE_MS / 1000.0)
 	{ }
 
-	virtual void initialize(ros::NodeHandle *_wp_nh)
+	virtual void initialize_with_nodehandle(ros::NodeHandle *_wp_nh)
 	{
 		wp_timer = _wp_nh->createTimer(WP_TIMEOUT_DT, &MissionBase::timeout_cb, this, true);
 		wp_timer.stop();
@@ -485,7 +485,7 @@ protected:
 	//! @brief set the FCU current waypoint
 	void set_current_waypoint(size_t seq)
 	{
-		auto i = 0;
+		size_t i = 0;
 		for (auto &it : waypoints) {
 			it.is_current = (i == seq) ? true : false;
 			i++;

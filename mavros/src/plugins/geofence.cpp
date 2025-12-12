@@ -31,7 +31,7 @@ public:
 	void initialize(UAS &uas_) override
 	{
 		PluginBase::initialize(uas_);
-		MissionBase::initialize(&gf_nh);
+		MissionBase::initialize_with_nodehandle(&gf_nh);
 
 		wp_state = WP::IDLE;
 		wp_type = plugin::WP_TYPE::FENCE;
@@ -240,5 +240,5 @@ private:
 }	// namespace std_plugins
 }	// namespace mavros
 
-#include <pluginlib/class_list_macros.h>
+#include <pluginlib/class_list_macros.hpp>
 PLUGINLIB_EXPORT_CLASS(mavros::std_plugins::GeofencePlugin, mavros::plugin::PluginBase)
